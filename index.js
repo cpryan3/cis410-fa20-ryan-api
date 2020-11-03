@@ -56,17 +56,12 @@ app.post("/reviewer/login", async (req,res)=>{
 
     let user = result[0]
     // console.log(user)
-    // this if statement works but i think i can't use it beacuse of the hash think
-    // if(!bcrypt.compareSync(password,user.password)){
-    //     console.log("invalid password")
-    //     return res.status(400).send("invalid user crendentials")
-    // }
-    //This is just a place holder until i can use the hashed password
-    if(user.password != password){
+    
+    if(!bcrypt.compareSync(password,user.password)){
         console.log("invalid password")
         return res.status(400).send("invalid user crendentials")
     }
-
+    
 
     //3. generate a token
 
@@ -131,7 +126,7 @@ app.post("/reviewer", async (req,res)=> {
     //Hashed Password is too long for what i have so that has to change
     var hashedPassword = bcrypt.hashSync(password)
     var insertQuery = `INSERT INTO Reviewer(FName, LName, Email, CompanyName, password)
-    VALUES ('${FName}','${LName}','${Email}','${CompanyName}', '${password}')`
+    VALUES ('${FName}','${LName}','${Email}','${CompanyName}', '${hashedPassword}')`
     db.executeQuery(insertQuery)
         .then(()=>{res.status(201).send()})
         .catch((err)=>{
