@@ -8,8 +8,48 @@ const jwt = require('jsonwebtoken')
 
 const config = require('./config.js')
 
+const auth = require('./middleware/authenticate')
+
+// const auth = async(req, res,next)=>{
+//     console.log(req.header('Authorization'))
+//     next()
+// }
+
 const app = express();
 app.use(express.json())
+
+app.post("/posts", auth, async (req,res)=> {
+   
+   try{
+    var VideoGameFK = req.body.VideoGameFK;
+    var Synopsis = req.body.Synopsis;
+    var Score = req.body.Score;
+    if(!VideoGameFK || !Synopsis || !Score){
+        res.status(400).send("bad request")
+    }
+    
+    synopsis = synopsis.replace("'","''")
+
+    let insertQuery = `INSERT INTO Post(Synopsis, Score, VideoGameFK, ReviewerFK)
+    OUTPUT inserted.ReviewerFK, inserted.Synopsis, inserted.Score, inserted.VideoGameFK
+    VALUES ('${Synopsis}', '${Score}', '${VideoGameFK}',${req.reviewer.ReviwerPK})`
+
+    let insteredReview =  await db.executeQuery(insertQuery)
+
+    // console.log(insertedReview)
+    res.status(201).send(insertedReview[0])
+
+}
+    catch(error){
+        console.log("error in POST /post", error);
+        res.status(500).send()
+    }
+   
+})
+
+app.get('/reviewer/me', auth, (req,res)=>{
+    res.send(req.reviewer)
+})
 
 app.get("/hi",(req,res)=>{
     res.send("hello world")
@@ -57,7 +97,7 @@ app.post("/reviewer/login", async (req,res)=>{
     let user = result[0]
     // console.log(user)
     
-    if(!bcrypt.compareSync(password,user.password)){
+    if(!bcrypt.compareSync(password, user.password)){
         console.log("invalid password")
         return res.status(400).send("invalid user crendentials")
     }
