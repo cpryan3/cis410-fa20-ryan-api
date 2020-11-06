@@ -10,13 +10,18 @@ const config = require('./config.js')
 
 const auth = require('./middleware/authenticate')
 
+const cors = require('cors')
+
+//azurewebsites.net, colostate.edu
+
 // const auth = async(req, res,next)=>{
 //     console.log(req.header('Authorization'))
 //     next()
-// }
+// 
 
 const app = express();
 app.use(express.json())
+app.use(cors())
 
 app.post("/posts", auth, async (req,res)=> {
    
@@ -27,16 +32,17 @@ app.post("/posts", auth, async (req,res)=> {
     if(!VideoGameFK || !Synopsis || !Score){
         res.status(400).send("bad request")
     }
+    console.log(req.reviewer.ReviewerPK)
     
-    synopsis = synopsis.replace("'","''")
+    Synopsis = Synopsis.replace("'","''")
 
     let insertQuery = `INSERT INTO Post(Synopsis, Score, VideoGameFK, ReviewerFK)
-    OUTPUT inserted.ReviewerFK, inserted.Synopsis, inserted.Score, inserted.VideoGameFK
-    VALUES ('${Synopsis}', '${Score}', '${VideoGameFK}',${req.reviewer.ReviwerPK})`
+    OUTPUT inserted.PostPK, inserted.Synopsis, inserted.Score, inserted.VideoGameFK
+    VALUES ('${Synopsis}', '${Score}', '${VideoGameFK}', ${req.reviewer.ReviewerPK})`
 
-    let insteredReview =  await db.executeQuery(insertQuery)
+    let insertedReview =  await db.executeQuery(insertQuery)
 
-    // console.log(insertedReview)
+    console.log(insertedReview)
     res.status(201).send(insertedReview[0])
 
 }
@@ -105,7 +111,7 @@ app.post("/reviewer/login", async (req,res)=>{
 
     //3. generate a token
 
-    let token = jwt.sign({pk: user.ReviwerPK}, config.JWT, {expiresIn: '60 minutes'})
+    let token = jwt.sign({pk: user.ReviewerPK}, config.JWT, {expiresIn: '60 minutes'})
 
     // console.log(token)
 
@@ -215,4 +221,6 @@ app.get("/VideoGame/:pk", (req, res)=>{
         })
 })
 
-app.listen(5000,()=>{console.log("app is running on port 5000")})
+
+const PORT = process.env.PORT || 5000
+app.listen(PORT,()=>{console.log(`app is running on port ${PORT}`)})

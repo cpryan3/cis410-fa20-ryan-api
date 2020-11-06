@@ -8,13 +8,13 @@ const auth = async(req, res,next)=>{
         //1. decode the token
 
         let myToken = req.header('Authorization').replace('Bearer ', '')
-        console.log(myToken)
+        // console.log(myToken)
 
         //when this executes it doesn't come back with a PK i have no idea how to fix that
         let decodedToken = jwt.verify(myToken, config.JWT)
         console.log(decodedToken)
-        // let reviwerPK = decodedToken.pk;
-        // console.log(reviewerPK)
+        let reviewerPK = decodedToken.pk;
+        console.log(reviewerPK)
         //2. compare token with db token
 
         let query = `SELECT ReviewerPK, FName, LName, Email
@@ -22,14 +22,14 @@ const auth = async(req, res,next)=>{
         WHERE ReviewerPK = ${reviewerPK} and Ticket = '${myToken}'`
 
         let returnedUser = await db.executeQuery(query)
-
-        //3. save user information in request
+        console.log(returnedUser)
+        // 3. save user information in request
 
         if (returnedUser[0]){
             req.reviewer = returnedUser[0];
             next()
         }
-        else{res.status(401).send('Authentication Failed.')}
+        else{res.status(401).send('Authentication Failed. man')}
     }catch(myError){
         res.status(401).send("Authentication Failed.")
     }

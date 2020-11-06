@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/be857d78-9518-4c08-a30b-8939066b650f/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/cis410-fa20-ryan-api",
+    "appService.deploySubpath": "."
+}
