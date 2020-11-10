@@ -23,6 +23,30 @@ const app = express();
 app.use(express.json())
 app.use(cors())
 
+// app.get('/posts/me', auth, async (req,res)=>{
+//     let reviewerPK = req.reviewer.ReviewerPK;
+
+// })
+
+//app.patch app.delete
+
+app.get("/", (req,res)=>{
+    res.send("hello world.")
+})
+
+app.post('/reviewer/logout', auth, (req,res)=>{
+    var query =`UPDATE Reviewer
+    SET Ticket = NULL
+    WHERE ReviewerPK = ${req.reviewer.ReviewerPK}`
+
+    db.executeQuery(query)
+    .then(()=>{res.status(200).send()})
+    .catch((error)=>{
+        console.log("error in POST /reviewer/logout", error)
+        res.status(500).send()
+    })
+})
+
 app.post("/posts", auth, async (req,res)=> {
    
    try{
