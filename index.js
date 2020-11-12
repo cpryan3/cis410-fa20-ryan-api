@@ -23,10 +23,25 @@ const app = express();
 app.use(express.json())
 app.use(cors())
 
-// app.get('/posts/me', auth, async (req,res)=>{
-//     let reviewerPK = req.reviewer.ReviewerPK;
+app.get('/posts/me', auth, async (req,res)=>{
+    let reviewerPK = req.reviewer.ReviewerPK;
+    var query = `SELECT Post.PostPK, Post.Score, Post.Synopsis, VideoGame.VideoGamePK, VideoGame.Title 
+    FROM Post
+	INNER JOIN VideoGame ON Post.VideoGameFK = VideoGame.VideoGamePK 
+    WHERE ReviewerFK = ${reviewerPK}`
 
-// })
+    let post =  await db.executeQuery(query)
+
+    console.log(post)
+    res.send(post)
+
+    // db.executeQuery(query)
+    .then(()=>{res.status(200).send()})
+    .catch((error)=>{
+        console.log("error in GET /posts/me", error)
+        res.status(500).send()
+    })
+})
 
 //app.patch app.delete
 
@@ -40,6 +55,7 @@ app.post('/reviewer/logout', auth, (req,res)=>{
     WHERE ReviewerPK = ${req.reviewer.ReviewerPK}`
 
     db.executeQuery(query)
+    console
     .then(()=>{res.status(200).send()})
     .catch((error)=>{
         console.log("error in POST /reviewer/logout", error)
