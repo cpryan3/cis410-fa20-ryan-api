@@ -19,7 +19,7 @@ const auth = async(req, res,next)=>{
 
         let query = `SELECT ReviewerPK, FName, LName, Email
         FROM Reviewer
-        WHERE ReviewerPK = ${reviewerPK} and Ticket = '${myToken}'`
+        WHERE ReviewerPK = ${reviewerPK} and Token = '${myToken}'`
 
         let returnedUser = await db.executeQuery(query)
         console.log(returnedUser)

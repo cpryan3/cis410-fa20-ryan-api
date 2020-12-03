@@ -51,7 +51,7 @@ app.get("/", (req,res)=>{
 
 app.post('/reviewer/logout', auth, (req,res)=>{
     var query =`UPDATE Reviewer
-    SET Ticket = NULL
+    SET Token = NULL
     WHERE ReviewerPK = ${req.reviewer.ReviewerPK}`
 
     db.executeQuery(query)
@@ -158,14 +158,14 @@ app.post("/reviewer/login", async (req,res)=>{
     //4. save the token in db and send token and user info
 
     let setTokenQuery = `UPDATE Reviewer
-    SET Ticket = '${token}'
+    SET Token = '${token}'
     WHERE ReviewerPK = ${user.ReviewerPK}`
 
     try{
         await db.executeQuery(setTokenQuery)
 
         res.status(200).send({
-            ticket: token,
+            token: token,
             user: {
                 FName: user.FName,
                 LName: user.LName,
